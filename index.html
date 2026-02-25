@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Vocabulary Learning App</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>📘 Vocabulary Learning</h1>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+      <div class="selectors">
+        <div>
+          <label>Chọn lớp:</label>
+          <select id="gradeSelect"></select>
+        </div>
+
+        <div>
+          <label>Chọn buổi:</label>
+          <select id="sectionSelect"></select>
+        </div>
+      </div>
+      <div class="mode-buttons">
+        <button onclick="setMode('EN-VI')">Anh ➜ Việt</button>
+        <button onclick="setMode('VI-EN')">Việt ➜ Anh</button>
+        <button onclick="setMode('IMAGE-EN')">Hình ➜ Anh</button>
+      </div>
+      <div class="clock">
+        <div class="clock-circle">
+          <span id="clockText">00:00:00</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD CONTAINER -->
+    <div class="card-container">
+      <!-- WORD CARD -->
+      <div id="card" class="card word-card">
+        <div id="word" class="word">Select Section</div>
+        <div id="meaning" class="meaning hidden"></div>
+      </div>
+
+      <!-- IMAGE CARD -->
+      <div class="card image-card">
+        <img id="wordImage" src="" alt="Vocabulary Image" />
+      </div>
+    </div>
+
+    <!-- NEXT BUTTON -->
+    <div class="answer-box">
+      <button id="nextBtn">Next</button>
+
+      <input type="text" id="answerInput" placeholder="Type your answer..." />
+
+      <button id="checkBtn">Check</button>
+
+      <span id="resultIcon"></span>
+    </div>
+
+    <!--show points and audio-->
+    <div class="stats">
+      <span>Correct: <span id="correctCount">0</span></span>
+      <span>Total: <span id="totalCount">0</span></span>
+      <span>Accuracy: <span id="accuracy">0%</span></span>
+    </div>
+
+    <audio
+      id="correctSound"
+      src="https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3"
+    ></audio>
+    <audio
+      id="wrongSound"
+      src="https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-buzz-950.mp3"
+    ></audio>
+
+    <script src="app.js"></script>
+  </body>
+</html>
