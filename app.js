@@ -1,7 +1,7 @@
 // =======================================
 // CONFIG
 // =======================================
-const SPREADSHEET_ID = "1dJuGpb8KrMKXtubfvb0fOD4swIIHzqBMW37KwdP12ug"; // 👈 DÁN ID GOOGLE SHEET VÀO ĐÂY
+const SPREADSHEET_ID = "1dJuGpb8KrMKXtubfvb0fOD4swIIHzqBMW37KwdP12ug";
 
 let allWords = [];
 let currentWords = [];
@@ -16,6 +16,7 @@ let total = 0;
 // =======================================
 // DOM
 // =======================================
+const wordListDiv = document.getElementById("wordList");
 const gradeSelect = document.getElementById("gradeSelect");
 const sectionSelect = document.getElementById("sectionSelect");
 
@@ -37,9 +38,12 @@ const wrongSound = document.getElementById("wrongSound");
 
 const card = document.getElementById("card");
 const clockText = document.getElementById("clockText");
+const wordListPanel = document.querySelector(".word-list-panel");
+
+const toggleWordList = document.getElementById("toggleWordList");
 
 // =======================================
-// LOAD GRADE (LOAD SHEET)
+// LOAD SHEET
 // =======================================
 async function loadGradeSheet(gradeName) {
   if (!gradeName) return;
@@ -49,7 +53,6 @@ async function loadGradeSheet(gradeName) {
   try {
     const res = await fetch(url);
     allWords = await res.json();
-
     setupSections();
   } catch (err) {
     console.error("Error loading sheet:", err);
@@ -57,7 +60,7 @@ async function loadGradeSheet(gradeName) {
 }
 
 // =======================================
-// SETUP SECTION DROPDOWN
+// SETUP SECTION
 // =======================================
 function setupSections() {
   const sections = [...new Set(allWords.map((w) => w.section))];
@@ -77,29 +80,48 @@ function setupSections() {
 }
 
 // =======================================
-// LOAD ONE SECTION ONLY
+// RENDER WORD LIST
+// =======================================
+function renderWordList() {
+  wordListDiv.innerHTML = "";
+
+  if (!currentWords.length) {
+    wordListDiv.innerHTML = "<p>No words found</p>";
+    return;
+  }
+
+  currentWords.forEach((w) => {
+    const div = document.createElement("div");
+    div.className = "word-item";
+    div.innerHTML = `
+      <strong>${w.word || ""}</strong><br>
+      ${w.meaning || ""}
+    `;
+    wordListDiv.appendChild(div);
+  });
+}
+
+// =======================================
+// LOAD SECTION
 // =======================================
 function loadSection(sectionName) {
   currentWords = allWords.filter((w) => w.section === sectionName);
-
+  renderWordList();
   shuffleWords();
 }
 
 // =======================================
-// SHUFFLE (NO REPEAT)
+// SHUFFLE
 // =======================================
 function shuffleWords() {
-  shuffledWords = currentWords
-    .map((w) => ({ sort: Math.random(), value: w }))
-    .sort((a, b) => a.sort - b.sort)
-    .map((a) => a.value);
+  shuffledWords = [...currentWords].sort(() => Math.random() - 0.5);
 
   currentIndex = 0;
   showSectionTitle();
 }
 
 // =======================================
-// SHOW SECTION TITLE
+// SHOW TITLE
 // =======================================
 function showSectionTitle() {
   wordDiv.textContent = sectionSelect.value || "Select Section";
@@ -113,17 +135,24 @@ function showSectionTitle() {
 // NEXT WORD
 // =======================================
 function nextWord() {
+  // Khi bắt đầu học → Ẩn word list
+  if (currentIndex === 0) {
+    wordListPanel.style.display = "none";
+  }
+
   if (currentIndex >= shuffledWords.length) {
     wordDiv.textContent = "🎉 Completed!";
     meaningDiv.textContent = "You finished this section.";
     meaningDiv.classList.remove("hidden");
     wordImage.src = "";
+
+    // Khi hoàn thành → Hiện lại word list
+    wordListPanel.style.display = "block";
+
     return;
   }
 
-  currentWord = shuffledWords[currentIndex];
-  currentIndex++;
-
+  currentWord = shuffledWords[currentIndex++];
   answerInput.value = "";
   resultIcon.textContent = "";
   meaningDiv.classList.add("hidden");
@@ -147,7 +176,7 @@ function nextWord() {
 }
 
 // =======================================
-// MODE SWITCH
+// MODE
 // =======================================
 function setMode(newMode) {
   mode = newMode;
@@ -161,8 +190,7 @@ function checkAnswer() {
   if (!currentWord) return;
 
   const userAnswer = answerInput.value.trim().toLowerCase();
-
-  let correctAnswer =
+  const correctAnswer =
     mode === "EN-VI"
       ? currentWord.meaning.toLowerCase()
       : currentWord.word.toLowerCase();
@@ -173,17 +201,13 @@ function checkAnswer() {
   if (userAnswer === correctAnswer) {
     correct++;
     correctSound.play();
-
     resultIcon.textContent = "✔";
     resultIcon.className = "correct";
-
-    setTimeout(() => nextWord(), 700);
+    setTimeout(nextWord, 700);
   } else {
     wrongSound.play();
-
     resultIcon.textContent = "✖";
     resultIcon.className = "wrong";
-
     meaningDiv.textContent = "Correct answer: " + correctAnswer;
     meaningDiv.classList.remove("hidden");
   }
@@ -193,16 +217,12 @@ function checkAnswer() {
 }
 
 // =======================================
-// ACCURACY
-// =======================================
 function updateAccuracy() {
   const percent = total === 0 ? 0 : Math.round((correct / total) * 100);
   accuracyText.textContent = percent + "%";
 }
 
-// =======================================
 // EVENTS
-// =======================================
 gradeSelect.addEventListener("change", () => {
   loadGradeSheet(gradeSelect.value);
 });
@@ -223,9 +243,16 @@ card.addEventListener("click", () => {
   meaningDiv.classList.remove("hidden");
 });
 
-// =======================================
+// WORDLIST CHECKBOX
+toggleWordList.addEventListener("change", () => {
+  if (toggleWordList.checked) {
+    wordListPanel.style.display = "block";
+  } else {
+    wordListPanel.style.display = "none";
+  }
+});
+
 // CLOCK
-// =======================================
 function updateClock() {
   const now = new Date();
   let hours = now.getHours();
@@ -242,11 +269,7 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// =======================================
 // INIT
-// =======================================
-
-// Thêm các grade cố định
 const grades = [
   "Grade6",
   "Grade7",
@@ -265,5 +288,4 @@ grades.forEach((g) => {
   gradeSelect.appendChild(option);
 });
 
-// Load mặc định
 loadGradeSheet(grades[0]);
