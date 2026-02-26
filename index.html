@@ -5,6 +5,7 @@
     <title>Vocabulary Learning App</title>
     <link rel="stylesheet" href="style.css" />
   </head>
+
   <body>
     <h1>📘 Vocabulary Learning</h1>
 
@@ -21,11 +22,13 @@
           <select id="sectionSelect"></select>
         </div>
       </div>
+
       <div class="mode-buttons">
         <button onclick="setMode('EN-VI')">Anh ➜ Việt</button>
         <button onclick="setMode('VI-EN')">Việt ➜ Anh</button>
         <button onclick="setMode('IMAGE-EN')">Hình ➜ Anh</button>
       </div>
+
       <div class="clock">
         <div class="clock-circle">
           <span id="clockText">00:00:00</span>
@@ -33,42 +36,59 @@
       </div>
     </div>
 
-    <!-- CARD CONTAINER -->
-    <div class="card-container">
-      <!-- WORD CARD -->
-      <div id="card" class="card word-card">
-        <div id="word" class="word">Select Section</div>
-        <div id="meaning" class="meaning hidden"></div>
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+      <!-- LEFT SIDE -->
+      <div class="left-panel">
+        <!-- CARD AREA -->
+        <div class="card-container">
+          <div id="card" class="card word-card">
+            <div id="word" class="word">Select Section</div>
+            <div id="meaning" class="meaning hidden"></div>
+          </div>
+
+          <div class="card image-card">
+            <img id="wordImage" src="" alt="Vocabulary Image" />
+          </div>
+        </div>
+
+        <!-- ANSWER BOX -->
+        <div class="answer-box">
+          <button id="nextBtn">Next</button>
+          <input
+            type="text"
+            id="answerInput"
+            placeholder="Type your answer..."
+          />
+          <button id="checkBtn">Check</button>
+          <span id="resultIcon"></span>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats">
+          <span>Correct: <span id="correctCount">0</span></span>
+          <span>Total: <span id="totalCount">0</span></span>
+          <span>Accuracy: <span id="accuracy">0%</span></span>
+        </div>
       </div>
 
-      <!-- IMAGE CARD -->
-      <div class="card image-card">
-        <img id="wordImage" src="" alt="Vocabulary Image" />
+      <label class="toggle-wordlist">
+        <input type="checkbox" id="toggleWordList" checked />
+        Show Word List
+      </label>
+
+      <!-- RIGHT SIDE -->
+      <div class="word-list-panel">
+        <h3>📚 Word List</h3>
+        <div id="wordList"></div>
       </div>
-    </div>
-
-    <!-- NEXT BUTTON -->
-    <div class="answer-box">
-      <button id="nextBtn">Next</button>
-
-      <input type="text" id="answerInput" placeholder="Type your answer..." />
-
-      <button id="checkBtn">Check</button>
-
-      <span id="resultIcon"></span>
-    </div>
-
-    <!--show points and audio-->
-    <div class="stats">
-      <span>Correct: <span id="correctCount">0</span></span>
-      <span>Total: <span id="totalCount">0</span></span>
-      <span>Accuracy: <span id="accuracy">0%</span></span>
     </div>
 
     <audio
       id="correctSound"
       src="https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3"
     ></audio>
+
     <audio
       id="wrongSound"
       src="https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-buzz-950.mp3"
