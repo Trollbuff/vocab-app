@@ -25,6 +25,7 @@ const meaningDiv = document.getElementById("meaning");
 const wordImage = document.getElementById("wordImage");
 
 const nextBtn = document.getElementById("nextBtn");
+const backBtn = document.getElementById("backBtn");
 const checkBtn = document.getElementById("checkBtn");
 const answerInput = document.getElementById("answerInput");
 const resultIcon = document.getElementById("resultIcon");
@@ -131,32 +132,77 @@ function showSectionTitle() {
   currentWord = null;
 }
 
+// =====uncheck wordlist=====//
+function closeWordList() {
+  toggleWordList.checked = false;
+  wordListPanel.style.display = "none";
+}
+// BACK
+function prevWord() {
+  closeWordList();
+
+  // Nếu đang ở title thì không làm gì
+  if (currentWord === null) return;
+
+  if (currentIndex > 0) {
+    currentIndex--;
+  }
+
+  currentWord = shuffledWords[currentIndex];
+
+  answerInput.value = "";
+  resultIcon.textContent = "";
+  meaningDiv.classList.add("hidden");
+  wordImage.src = currentWord.image || "";
+
+  if (mode === "EN-VI") {
+    wordDiv.textContent = currentWord.word;
+    meaningDiv.textContent = currentWord.meaning;
+  }
+
+  if (mode === "VI-EN") {
+    wordDiv.textContent = currentWord.meaning;
+    meaningDiv.textContent = currentWord.word;
+  }
+
+  if (mode === "IMAGE-EN") {
+    wordDiv.textContent = "What is this word?";
+    meaningDiv.textContent = currentWord.word;
+  }
+}
+
 // =======================================
 // NEXT WORD
 // =======================================
 function nextWord() {
-  // Khi bắt đầu học → Ẩn word list
-  if (currentIndex === 0) {
-    wordListPanel.style.display = "none";
+  closeWordList();
+
+  // Nếu đang ở title → bắt đầu từ word đầu tiên
+  if (currentWord === null) {
+    currentIndex = 0;
+  } else {
+    currentIndex++;
   }
 
+  // Nếu vượt mảng → completed
   if (currentIndex >= shuffledWords.length) {
     wordDiv.textContent = "🎉 Completed!";
     meaningDiv.textContent = "You finished this section.";
     meaningDiv.classList.remove("hidden");
     wordImage.src = "";
 
-    // Khi hoàn thành → Hiện lại word list
+    toggleWordList.checked = true;
     wordListPanel.style.display = "block";
 
+    currentWord = null;
     return;
   }
 
-  currentWord = shuffledWords[currentIndex++];
+  currentWord = shuffledWords[currentIndex];
+
   answerInput.value = "";
   resultIcon.textContent = "";
   meaningDiv.classList.add("hidden");
-
   wordImage.src = currentWord.image || "";
 
   if (mode === "EN-VI") {
@@ -232,6 +278,7 @@ sectionSelect.addEventListener("change", () => {
 });
 
 nextBtn.addEventListener("click", nextWord);
+backBtn.addEventListener("click", prevWord);
 checkBtn.addEventListener("click", checkAnswer);
 
 answerInput.addEventListener("keydown", (e) => {
